@@ -21,7 +21,9 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package*.json ./
 RUN yarn install --frozen-lockfile
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./next.config.ts
 
 USER node
 
