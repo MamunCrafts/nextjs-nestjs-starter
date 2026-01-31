@@ -10,16 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+      - name: checkout code from github
+        uses: actions/checkout@v4
 
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 root@${{ secrets.HOST }} "
-            cd /var/www/${{ secrets.PROJECT_NAME }} &&
+      - name: setup ssh key
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/nextjs-nestjs-starter &&
             git pull origin main &&
-            docker compose up --build -d
-          "
+            docker compose up  -d --build
+          
